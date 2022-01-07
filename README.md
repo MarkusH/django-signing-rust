@@ -24,7 +24,8 @@ let book = Book {
     year: 1954,
 };
 
-let signed = django_signing::dumps(book, SECRET, SALT, true);
+let compress = true;
+let signed = django_signing::dumps(book, SECRET, SALT, compress);
 
 println!("Signed value: {}", signed);
 // This prints something like:
