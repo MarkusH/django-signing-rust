@@ -1,4 +1,4 @@
-use base62::base62;
+use base62;
 use base64;
 use digest::{Digest, Mac};
 use flate2::{read::ZlibDecoder, write::ZlibEncoder, Compression};
@@ -11,6 +11,9 @@ pub use time::Duration; // re-export
 use time::OffsetDateTime;
 
 type HmacSha256 = Hmac<Sha256>;
+
+#[cfg(feature = "python")]
+mod python;
 
 #[derive(Debug)]
 pub enum SignatureError {
@@ -82,7 +85,7 @@ impl BaseSigner {
         base64::encode_config(mac.finalize().into_bytes(), base64::URL_SAFE_NO_PAD)
     }
 
-    fn decode_object<T>(&self, value: String) -> Result<T, SignatureError>
+    pub fn decode_object<T>(&self, value: String) -> Result<T, SignatureError>
     where
         T: DeserializeOwned,
     {
@@ -104,7 +107,7 @@ impl BaseSigner {
         }
     }
 
-    fn encode_object<T>(&self, obj: T, compress: bool) -> String
+    pub fn encode_object<T>(&self, obj: T, compress: bool) -> String
     where
         T: Serialize,
     {
